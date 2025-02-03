@@ -1,0 +1,88 @@
+module OneOrMore exposing
+    ( OneOrMore
+    , singleton
+    , initialize
+    , head
+    , tail
+    , insert
+    , remove
+    , toArray
+    , fromArray
+    , fromArrayWithDefault
+    )
+
+
+import Array exposing (Array)
+
+
+type OneOrMore a =
+    OneOrMore
+        { head : a
+        , tail = Array a
+        }
+
+
+singleton : a -> OneOrMore a
+    OneOrMore
+        { head = a
+        , tail = []
+        }
+
+
+initialize : { head : a, tail : Array a } -> OneOrMore a
+initialize record =
+    OneOrMore record
+
+
+head : OneOrMore a -> a
+head (OneOrMore { head }) =
+    head
+
+
+tail : OneOrMore a -> Array a
+tail (OneOrMore { tail }) =
+    tail
+
+
+insert : a -> OneOrMore a -> OneOrMore a
+insert a oneOrMore =
+    oneOrMore
+        |> toArray
+        |> Array.keepIf (\b -> b /= a)
+        |> Array.pushLast a
+        |> fromArrayWithDefault a
+
+
+remove : a -> OneOrMore a -> OneOrMore a
+remove a oneOrMore =
+    oneOrMore
+        |> toArray
+        |> Array.keepIf (\b -> b /= a)
+        |> fromArrayWithDefault a
+
+
+fromArray : Array a -> Maybe (OneOrMore a)
+fromArray array =
+    case Array.popFirst array of
+        Just { first, rest } ->
+            Just 
+                ( initialize 
+                    { head = first
+                    , tail = rest 
+                    }
+                )
+        
+        Nothing ->
+            Nothing
+
+
+fromArrayWithDefault : a -> Array a -> OneOrMore a
+fromArrayWithDefault a array =
+    array
+        |> fromArray
+        |> MaybeWithDefault (singleton a)
+
+
+toArray : OneOrMore a -> Array a
+toArray (OneOrMore { head, tail }) =
+    [ head ] ++ tail
